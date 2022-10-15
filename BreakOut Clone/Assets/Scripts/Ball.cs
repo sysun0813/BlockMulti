@@ -28,6 +28,7 @@ public class Ball : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D col)
     {
         Col = col.gameObject;
-        if (Col.CompareTag("TriggerBlock")) paddle.BlockBreak(Col, Col.transform, Col.GetComponent<Animator>());
+        if (Col.CompareTag("TriggerBlock")) 
+            paddle.BlockBreak(Col, Col.transform, Col.GetComponent<Animator>());
     }
 }
