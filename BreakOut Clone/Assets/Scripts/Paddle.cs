@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Paddle : MonoBehaviour {
+public class Paddle : MonoBehaviour
+{
 
     [Multiline(12)]
     public string[] StageStr;
@@ -17,13 +18,6 @@ public class Paddle : MonoBehaviour {
     public GameObject WinPanel;
     public GameObject GameOverPanel;
     public GameObject PausePanel;
-    public AudioSource S_Break;
-    public AudioSource S_Eat;
-    public AudioSource S_Fail;
-    public AudioSource S_Gun;
-    public AudioSource S_HardBreak;
-    public AudioSource S_Paddle;
-    public AudioSource S_Victory;
     public Transform ItemsTr;
     public Transform BlocksTr;
     public BoxCollider2D[] BlockCol;
@@ -48,7 +42,6 @@ public class Paddle : MonoBehaviour {
     int score;
     int stage;
 
-    // 지금은 화면조정 시간입니다
 #if (UNITY_ANDROID)
     void Awake() { Screen.SetResolution(1080, 1920, false); }
 #else
@@ -86,7 +79,7 @@ public class Paddle : MonoBehaviour {
         GameOverPanel.SetActive(false);
     }
 
-    // 블럭 생성
+    // 블록 생성
     void BlockGenerator()
     {
         string currentStr = StageStr[stage].Replace("\n", "");
@@ -94,20 +87,31 @@ public class Paddle : MonoBehaviour {
         for (int i = 0; i < currentStr.Length; i++)
         {
             BlockCol[i].gameObject.SetActive(false);
-            char A = currentStr[i]; string currentName = "Block"; int currentB = 0;
+            char A = currentStr[i];
+            string currentName = "Block";
+            int currentB = 0;
 
             if (A == '*') continue;
-            else if (A == '8') { currentB = 8; currentName = "HardBlock0"; }
-            else if (A == '9') currentB = Random.Range(0, 8);
-            else currentB = int.Parse(A.ToString());
-
+            else if (A == '8')
+            {
+                currentB = 8;
+                currentName = "HardBlock0";
+            }
+            else if (A == '9')
+            {
+                currentB = Random.Range(0, 8);
+            }
+            else
+            {
+                currentB = int.Parse(A.ToString());
+            }
             BlockCol[i].gameObject.name = currentName;
             BlockCol[i].gameObject.GetComponent<SpriteRenderer>().sprite = B[currentB];
             BlockCol[i].gameObject.SetActive(true);
         }
     }
 
-    // 볼 위치 초기화하고 0.7초간 깜빡이는 애니메이션 재생
+    // 볼 위치 초기화 후 애니메이션 재생
     IEnumerator BallReset()
     {
         isStart = false;
@@ -123,21 +127,22 @@ public class Paddle : MonoBehaviour {
         StartCoroutine("InfinityLoop");
     }
 
-    // 무한 루프
+
+    // 마우스 관련 무한 루프
     IEnumerator InfinityLoop()
     {
         while (true)
         {
             // 마우스 누를 때 공이 붙어있음
-            if(Input.GetMouseButton(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved))
+            if (Input.GetMouseButton(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved))
             {
                 paddleX = Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.GetMouseButton(0) ? Input.mousePosition : (Vector3)Input.GetTouch(0).position).x, -paddleBorder, paddleBorder);
                 transform.position = new Vector2(paddleX, transform.position.y);
-                if(!isStart) BallTr[0].position = new Vector2(paddleX, BallTr[0].position.y);
+                if (!isStart) BallTr[0].position = new Vector2(paddleX, BallTr[0].position.y);
             }
 
             // 마우스 떼면 공이 떨어져나감
-            if(!isStart && (Input.GetMouseButtonUp(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)))
+            if (!isStart && (Input.GetMouseButtonUp(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)))
             {
                 isStart = true;
                 ballSpeed = oldBallSpeed;
@@ -160,7 +165,6 @@ public class Paddle : MonoBehaviour {
             case "Paddle":
                 ThisBallRg.velocity = Vector2.zero;
                 ThisBallRg.AddForce((ThisBallTr.position - transform.position).normalized * ballSpeed);
-                S_Paddle.Play();
                 combo = 0;
                 break;
 
@@ -194,14 +198,12 @@ public class Paddle : MonoBehaviour {
             case "HardBlock0":
                 Col.name = "HardBlock1";
                 ColSr.sprite = B[9];
-                S_HardBreak.Play();
                 break;
 
             // 돌1에 부딪히면 돌2이 됨
             case "HardBlock1":
                 Col.name = "HardBlock2";
                 ColSr.sprite = B[10];
-                S_HardBreak.Play();
                 break;
 
             // 블럭이나 돌에 부딪히면 부숴짐
@@ -216,7 +218,6 @@ public class Paddle : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D col)
     {
         Destroy(col.gameObject);
-        S_Eat.Play();
         switch (col.name)
         {
             // 볼 3개 전부 활성화
@@ -369,7 +370,6 @@ public class Paddle : MonoBehaviour {
             {
                 Bullet[i * 2].SetActive(true);
                 Bullet[i * 2 + 1].SetActive(true);
-                S_Gun.Play();
                 yield return new WaitForSeconds(0.34f);
             }
         }
@@ -388,7 +388,6 @@ public class Paddle : MonoBehaviour {
 
         // 벽돌 부서지는 애니메이션
         ColAni.SetTrigger("Break");
-        S_Break.Play();
         StartCoroutine(ActiveFalse(Col));
 
         StopCoroutine("BlockCheck");
@@ -399,10 +398,10 @@ public class Paddle : MonoBehaviour {
     void ItemGenerator(Vector2 ColTr)
     {
         int rand = Random.Range(0, 10000);
-        if(rand < 800)
+        if (rand < 800)
         {
             string currentName = "";
-            switch(rand % 7)
+            switch (rand % 7)
             {
                 case 0: currentName = "Item_TripleBall"; break;
                 case 1: currentName = "Item_Big"; break;
@@ -440,24 +439,21 @@ public class Paddle : MonoBehaviour {
         }
 
         // 볼이 하나도 없을 때 라이프 깎임
-        if(ballCount == 0)
+        if (ballCount == 0)
         {
             if (Life1.activeSelf)
             {
                 Life1.SetActive(false);
                 StartCoroutine("BallReset");
-                S_Fail.Play();
             }
             else if (Life0.activeSelf)
             {
                 Life0.SetActive(false);
                 StartCoroutine("BallReset");
-                S_Fail.Play();
             }
             else
             {
                 GameOverPanel.SetActive(true);
-                S_Fail.Play();
                 Clear();
             }
         }
@@ -482,10 +478,9 @@ public class Paddle : MonoBehaviour {
             if (BlocksTr.GetChild(i).gameObject.activeSelf) blockCount++;
 
         // 승리
-        if(blockCount == 0)
+        if (blockCount == 0)
         {
             WinPanel.SetActive(true);
-            S_Victory.Play();
             Clear();
         }
 

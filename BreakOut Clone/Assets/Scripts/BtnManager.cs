@@ -19,17 +19,8 @@ public class BtnManager : MonoBehaviour {
 
 	public void SingleButtonOn()
     {
+		this.single.SetActive(false);
 		SceneManager.LoadScene("SampleScene");
     }
 
-	public void ExitButtonOn()
-    {
-//#if UNITY_EDITOR
-//			UnityEditor.EditorApplication.isPlaying = false;
-//#elif UNITY_IOS
-		
-//#else
-//		Application.Quit(0);
-//#endif
-	}
 }
