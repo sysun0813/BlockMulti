@@ -9,6 +9,7 @@ public class Paddle : MonoBehaviour
     [Multiline(12)]
     public string[] StageStr;
     public Sprite[] B;
+    public Button startBtn;
     public GameObject P_Item;
     public SpriteRenderer P_ItemSr;
     public Text StageText;
@@ -58,7 +59,7 @@ public class Paddle : MonoBehaviour
         }
     }
 
-    // 스테이지 초기화 (-1 재시작, 0 다음 스테이지, 숫자 스테이지)
+    // (-1 재시작, 0 다음 스테이지, 숫자 스테이지)
     public void AllReset(int _stage)
     {
         if (_stage == 0) stage++;
@@ -68,6 +69,26 @@ public class Paddle : MonoBehaviour
         Clear();
         BlockGenerator();
         StartCoroutine("BallReset");
+        startBtn.gameObject.SetActive(false);
+
+        StageText.text = stage.ToString();
+        score = 0;
+        ScoreText.text = "0";
+        PaddleSr.enabled = true;
+        Life0.SetActive(true);
+        Life1.SetActive(true);
+        WinPanel.SetActive(false);
+        GameOverPanel.SetActive(false);
+    }
+
+    public void GameStart()
+    {
+        stage = 1;
+        startBtn.gameObject.SetActive(false);
+        Clear();
+        BlockGenerator();
+        StartCoroutine("BallReset");
+
 
         StageText.text = stage.ToString();
         score = 0;

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class BtnManager : MonoBehaviour {
 
 	public GameObject single;
+	public GameObject eternal;
 
 	// Use this for initialization
 	void Start () {
@@ -19,8 +20,14 @@ public class BtnManager : MonoBehaviour {
 
 	public void SingleButtonOn()
     {
-		this.single.SetActive(false);
-		SceneManager.LoadScene("SampleScene");
+		//this.single.SetActive(false);
+		SceneManager.LoadScene("Original");
+    }
+
+	public void EternalMode()
+    {
+		//this.eternal.SetActive(false);
+		SceneManager.LoadScene("Swipe");
     }
 
 }
