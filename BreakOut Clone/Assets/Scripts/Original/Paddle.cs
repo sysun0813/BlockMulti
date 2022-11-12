@@ -48,8 +48,6 @@ public class Paddle : MonoBehaviour
 #else
     void Awake() { Screen.SetResolution(540, 960, false); }
 #endif
-
-    // 뒤로가기 키 누르면 일시정지
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -99,8 +97,6 @@ public class Paddle : MonoBehaviour
         WinPanel.SetActive(false);
         GameOverPanel.SetActive(false);
     }
-
-    // 블록 생성
     void BlockGenerator()
     {
         string currentStr = StageStr[stage].Replace("\n", "");
@@ -131,8 +127,6 @@ public class Paddle : MonoBehaviour
             BlockCol[i].gameObject.SetActive(true);
         }
     }
-
-    // 볼 위치 초기화 후 애니메이션 재생
     IEnumerator BallReset()
     {
         isStart = false;
@@ -154,15 +148,12 @@ public class Paddle : MonoBehaviour
     {
         while (true)
         {
-            // 마우스 누를 때 공이 붙어있음
             if (Input.GetMouseButton(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Moved))
             {
                 paddleX = Mathf.Clamp(Camera.main.ScreenToWorldPoint(Input.GetMouseButton(0) ? Input.mousePosition : (Vector3)Input.GetTouch(0).position).x, -paddleBorder, paddleBorder);
                 transform.position = new Vector2(paddleX, transform.position.y);
                 if (!isStart) BallTr[0].position = new Vector2(paddleX, BallTr[0].position.y);
             }
-
-            // 마우스 떼면 공이 떨어져나감
             if (!isStart && (Input.GetMouseButtonUp(0) || (Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended)))
             {
                 isStart = true;
@@ -176,20 +167,16 @@ public class Paddle : MonoBehaviour
     // 볼이 충돌할 때
     public IEnumerator BallCollisionEnter2D(Transform ThisBallTr, Rigidbody2D ThisBallRg, Ball ThisBallCs, GameObject Col, Transform ColTr, SpriteRenderer ColSr, Animator ColAni)
     {
-        // 같은 볼끼리 충돌 무시
         Physics2D.IgnoreLayerCollision(2, 2);
         if (!isStart) yield break;
 
         switch (Col.name)
         {
-            // 패들에 부딪히면 차이값만큼 힘 줌
             case "Paddle":
                 ThisBallRg.velocity = Vector2.zero;
                 ThisBallRg.AddForce((ThisBallTr.position - transform.position).normalized * ballSpeed);
                 combo = 0;
                 break;
-
-            // 자석패들에 부딪히면 볼이 자석에 붙어있음
             case "MagnetPaddle":
                 ThisBallCs.isMagnet = true;
                 ThisBallRg.velocity = Vector2.zero;
@@ -209,25 +196,21 @@ public class Paddle : MonoBehaviour
                 }
                 break;
 
-            // 데스존에 부딪히면 비활성화, 볼 체크
             case "DeathZone":
                 ThisBallTr.gameObject.SetActive(false);
                 BallCheck();
                 break;
 
-            // 돌0에 부딪히면 돌1이 됨
             case "HardBlock0":
                 Col.name = "HardBlock1";
                 ColSr.sprite = B[9];
                 break;
 
-            // 돌1에 부딪히면 돌2이 됨
             case "HardBlock1":
                 Col.name = "HardBlock2";
                 ColSr.sprite = B[10];
                 break;
 
-            // 블럭이나 돌에 부딪히면 부숴짐
             case "HardBlock2":
             case "Block":
                 BlockBreak(Col, ColTr, ColAni);
@@ -235,13 +218,12 @@ public class Paddle : MonoBehaviour
         }
     }
 
-    // 패들이 아이템과 충돌할 때
+    // 아이템
     void OnTriggerEnter2D(Collider2D col)
     {
         Destroy(col.gameObject);
         switch (col.name)
         {
-            // 볼 3개 전부 활성화
             case "Item_TripleBall":
                 GameObject OneBall = BallCheck();
                 for (int i = 0; i < 3; i++)
@@ -253,42 +235,30 @@ public class Paddle : MonoBehaviour
                     BallRg[i].AddForce(Random.insideUnitCircle.normalized * ballSpeed);
                 }
                 break;
-
-            // 7.5초동안 패들이 커짐
             case "Item_Big":
                 paddleSize = 2.42f;
                 paddleBorder = 1.963f;
                 StopCoroutine("Item_BigOrSmall");
                 StartCoroutine("Item_BigOrSmall", false);
                 break;
-
-            // 7.5초동안 패들이 작아짐
             case "Item_Small":
                 paddleSize = 0.82f;
                 paddleBorder = 2.521f;
                 StopCoroutine("Item_BigOrSmall");
                 StartCoroutine("Item_BigOrSmall", false);
                 break;
-
-            // 7.5초동안 볼의 속도가 느려짐
             case "Item_SlowBall":
                 StopCoroutine("Item_SlowBall");
                 StartCoroutine("Item_SlowBall", false);
                 break;
-
-            // 4초동안 불공이 됨
             case "Item_FireBall":
                 StopCoroutine("Item_FireBall");
                 StartCoroutine("Item_FireBall", false);
                 break;
-
-            // 7.5초동안 자석 활성화
             case "Item_Magnet":
                 StopCoroutine("Item_Magnet");
                 StartCoroutine("Item_Magnet", false);
                 break;
-
-            // 4초동안 24발의 총알을 발사함
             case "Item_Gun":
                 StopCoroutine("Item_Gun");
                 StartCoroutine("Item_Gun", false);
@@ -397,17 +367,12 @@ public class Paddle : MonoBehaviour
         Gun.SetActive(false);
     }
 
-    // 블럭이 부숴질 때
     public void BlockBreak(GameObject Col, Transform ColTr, Animator ColAni)
     {
-        // 아이템 생성
-        ItemGenerator(ColTr.position);
-
-        // 스코어 증가, 콤보당 1점, 3콤보이상은 3점
+        ItemGenerator(Col.transform.position);
         score += (++combo > 3) ? 3 : combo;
         ScoreText.text = score.ToString();
 
-        // 벽돌 부서지는 애니메이션
         ColAni.SetTrigger("Break");
         StartCoroutine(ActiveFalse(Col));
 
@@ -415,11 +380,11 @@ public class Paddle : MonoBehaviour
         StartCoroutine("BlockCheck");
     }
 
-    // 8%의 확률로 아이템이 나옴
+    //아이템 생성
     void ItemGenerator(Vector2 ColTr)
     {
-        int rand = Random.Range(0, 10000);
-        if (rand < 800)
+        int rand = Random.Range(0, 1000);
+        if (rand < 100)
         {
             string currentName = "";
             switch (rand % 7)
@@ -441,14 +406,12 @@ public class Paddle : MonoBehaviour
         }
     }
 
-    // 0.2초 후 비활성화
     IEnumerator ActiveFalse(GameObject Col)
     {
         yield return new WaitForSeconds(0.2f);
         Col.SetActive(false);
     }
 
-    // 볼 체크
     GameObject BallCheck()
     {
         int ballCount = 0;
@@ -459,7 +422,6 @@ public class Paddle : MonoBehaviour
             ReturnBall = OneBall;
         }
 
-        // 볼이 하나도 없을 때 라이프 깎임
         if (ballCount == 0)
         {
             if (Life1.activeSelf)
@@ -482,7 +444,6 @@ public class Paddle : MonoBehaviour
         return ReturnBall;
     }
 
-    // 볼에 힘을 줌
     public void BallAddForce(Rigidbody2D ThisBallRg)
     {
         Vector2 dir = ThisBallRg.velocity.normalized;
@@ -490,7 +451,6 @@ public class Paddle : MonoBehaviour
         ThisBallRg.AddForce(dir * ballSpeed);
     }
 
-    // 블럭 체크
     IEnumerator BlockCheck()
     {
         yield return new WaitForSeconds(0.5f);
@@ -498,18 +458,13 @@ public class Paddle : MonoBehaviour
         for (int i = 0; i < BlocksTr.childCount; i++)
             if (BlocksTr.GetChild(i).gameObject.activeSelf) blockCount++;
 
-        // 승리
         if (blockCount == 0)
         {
             WinPanel.SetActive(true);
             Clear();
         }
-
-        // 가끔 아이템 흘림
-        ItemGenerator(new Vector2(Random.Range(-2.05f, 2.05f), 5.17f));
     }
 
-    // 승리 또는 게임오버시 호출
     void Clear()
     {
         StopAllCoroutines();

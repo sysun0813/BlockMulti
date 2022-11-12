@@ -11029,29 +11029,29 @@ MonoBehaviour:
     **8999998**
 
     ***88888***'
-  - '88888888888
+  - '***88888***
 
-    89999999998
+    **8999998**
 
-    89999999998
+    ***87778***
 
-    89998888998
+    ****888****
 
-    89998998998
+    ***86668***
 
-    89998998998
+    **8055508**
 
-    89998998998
+    *804444408*
 
-    89998998998
+    80333333308
 
-    89998998998
+    *802222208*
 
-    89998999998
+    **8011108**
 
-    89998999998
+    ***80008***
 
-    89998888888'
+    ****888****'
   B:
   - {fileID: 21300000, guid: 7aeeb95edaa3a4a4ebf7524210fc88d3, type: 3}
   - {fileID: 21300002, guid: 7aeeb95edaa3a4a4ebf7524210fc88d3, type: 3}
@@ -11412,7 +11412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &598981362
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28420,7 +28420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1853640404
 RectTransform:
   m_ObjectHideFlags: 0
